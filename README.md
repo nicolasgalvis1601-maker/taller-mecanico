@@ -49,6 +49,18 @@ Abre http://localhost:5173. En la barra superior debe decir **"API en línea"**.
 - `frontend/.env` tiene `VITE_API_URL=http://localhost:8000/api`. Si no existe, el frontend usa esa misma dirección por defecto.
 - Los dos están en `.gitignore`: **no se suben a GitHub**.
 
+### Cargar datos de prueba (cientos de registros)
+
+```bash
+cd backend
+npm run seed:check   # solo genera y valida los datos, no toca la base
+npm run seed         # BORRA los datos actuales y carga los de prueba
+```
+
+Carga 100 mecánicos, 105 servicios, 200 repuestos, 300 clientes, 400 vehículos y 600 órdenes
+(70 activas y 530 entregadas), respetando las reglas del sistema. Como la base está en MongoDB Atlas,
+los datos aparecen también en la versión publicada en Render.
+
 ### Pruebas del backend
 
 ```bash

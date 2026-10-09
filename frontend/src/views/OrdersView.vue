@@ -22,7 +22,9 @@ const pagination = ref({ sortBy: 'entryDate', descending: true, rowsPerPage: 10 
 const columns = [
   { name: 'id', label: 'Orden', field: '_id', align: 'left', format: shortId },
   { name: 'entryDate', label: 'Ingreso', field: 'entryDate', align: 'left', sortable: true, format: formatDateTime },
-  { name: 'vehicle', label: 'Vehículo', field: (r) => `${r.vehicle?.plate || ''} ${r.vehicle?.brand || ''} ${r.vehicle?.model || ''}`, align: 'left' },
+  { name: 'plate', label: 'Placa', field: (r) => r.vehicle?.plate || '', align: 'left', sortable: true },
+  { name: 'brand', label: 'Marca', field: (r) => r.vehicle?.brand || '—', align: 'left', sortable: true },
+  { name: 'model', label: 'Modelo', field: (r) => r.vehicle?.model || '—', align: 'left', sortable: true },
   { name: 'owner', label: 'Propietario', field: (r) => r.vehicle?.clientId?.fullName || '—', align: 'left', sortable: true },
   { name: 'mechanic', label: 'Mecánico', field: (r) => r.mechanic?.fullName || '—', align: 'left', sortable: true },
   { name: 'status', label: 'Estado', field: 'status', align: 'center', sortable: true },
@@ -105,11 +107,8 @@ onMounted(() => {
         <template #body-cell-id="props">
           <q-td :props="props" class="text-mono text-weight-bold">{{ props.value }}</q-td>
         </template>
-        <template #body-cell-vehicle="props">
-          <q-td :props="props">
-            <PlateTag :plate="props.row.vehicle?.plate" />
-            <span class="q-ml-sm">{{ props.row.vehicle?.brand }} {{ props.row.vehicle?.model }}</span>
-          </q-td>
+        <template #body-cell-plate="props">
+          <q-td :props="props"><PlateTag :plate="props.value" /></q-td>
         </template>
         <template #body-cell-status="props">
           <q-td :props="props"><StatusChip :status="props.value" /></q-td>
