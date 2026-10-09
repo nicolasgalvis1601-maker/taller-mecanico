@@ -1,0 +1,54 @@
+/* Estilos globales complementarios a Quasar */
+body {
+  font-family: 'Roboto', -apple-system, 'Segoe UI', sans-serif;
+}
+
+.page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.kpi-card {
+  border-left: 4px solid var(--q-primary);
+}
+.kpi-card .kpi-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.plate {
+  display: inline-block;
+  font-family: 'Roboto Mono', ui-monospace, monospace;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border: 2px solid #222;
+  border-radius: 4px;
+  background: #ffd54f;
+  color: #222;
+  font-size: 0.85rem;
+}
+
+.table-clickable tbody tr {
+  cursor: pointer;
+}
+
+.text-mono {
+  font-family: 'Roboto Mono', ui-monospace, monospace;
+}
+
+/* Los campos de placa se escriben en mayúsculas, pero el placeholder no */
+input.text-uppercase::placeholder {
+  text-transform: none;
+}
+
+/* Modo oscuro: el azul de marca es muy oscuro para texto, se aclara */
+.body--dark .text-primary {
+  color: #8fb3e3 !important;
+}
+.body--dark .q-avatar.bg-primary,
+.body--dark .q-chip.bg-primary,
+.body--dark .q-badge.bg-primary {
+  background: #2f5a8c !important;
+}

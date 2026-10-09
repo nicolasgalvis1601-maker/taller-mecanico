@@ -1,0 +1,14 @@
+# Dependencias (se instalan con npm install)
+node_modules/
+
+# Variables de entorno: tienen contraseñas, NUNCA se suben
+.env
+.env.local
+
+# Compilación del frontend
+dist/
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+*.log
