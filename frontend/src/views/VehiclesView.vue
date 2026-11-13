@@ -5,6 +5,8 @@ import { useRouter } from 'vue-router'
 import { useVehicleStore } from '../stores/vehicles.js'
 import { useClientStore } from '../stores/clients.js'
 import PageHeader from '../components/PageHeader.vue'
+import RowActions from '../components/RowActions.vue'
+import SearchInput from '../components/SearchInput.vue'
 import PlateTag from '../components/PlateTag.vue'
 import { notifySuccess, notifyError } from '../utils/notify.js'
 import { required, year } from '../utils/rules.js'
@@ -130,9 +132,7 @@ onMounted(() => {
         bordered
       >
         <template #top>
-          <q-input v-model="filter" dense outlined clearable placeholder="Filtrar por placa, marca, modelo…" style="width: 360px; max-width: 100%">
-            <template #prepend><q-icon name="search" /></template>
-          </q-input>
+          <SearchInput v-model="filter" placeholder="Filtrar por placa, marca, modelo…" />
         </template>
 
         <template #body-cell-plate="props">
@@ -147,16 +147,12 @@ onMounted(() => {
         </template>
 
         <template #body-cell-actions="props">
-          <q-td :props="props" class="q-gutter-xs">
-            <q-btn flat round dense color="primary" icon="history" @click="goHistory(props.row)">
-              <q-tooltip>Historial técnico</q-tooltip>
-            </q-btn>
-            <q-btn flat round dense color="secondary" icon="edit" @click="openEdit(props.row)">
-              <q-tooltip>Editar</q-tooltip>
-            </q-btn>
-            <q-btn flat round dense color="negative" icon="delete" @click="confirmDelete(props.row)">
-              <q-tooltip>Eliminar</q-tooltip>
-            </q-btn>
+          <q-td :props="props">
+            <RowActions @edit="openEdit(props.row)" @delete="confirmDelete(props.row)">
+              <q-btn flat round dense color="primary" icon="history" @click="goHistory(props.row)">
+                <q-tooltip>Historial técnico</q-tooltip>
+              </q-btn>
+            </RowActions>
           </q-td>
         </template>
       </q-table>

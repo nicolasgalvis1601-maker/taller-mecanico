@@ -49,6 +49,12 @@ const board = computed(() =>
   }))
 )
 
+const greeting = computed(() => {
+  const h = new Date().getHours()
+  return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches'
+})
+const today = new Intl.DateTimeFormat('es-CO', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())
+
 const pendingValue = computed(() => orderStore.activeOrders.reduce((acc, o) => acc + (o.total || 0), 0))
 
 const daysIn = (date) => {
@@ -67,103 +73,216 @@ onMounted(refresh)
 <template>
   <q-page padding>
     <div class="page-container">
-      <div class="row items-center q-col-gutter-md q-mb-lg">
-        <div class="col-12 col-md">
-          <div class="text-h5 text-weight-bold">Panel del taller</div>
-          <div class="text-grey-7">Resumen en tiempo real de lo que está pasando en el taller</div>
+      <!-- Encabezado: saludo + acciones -->
+      <header class="dash-head">
+        <div>
+          <div class="text-eyebrow">{{ today }}</div>
+          <h1 class="dash-title">{{ greeting }}, este es el panel del taller</h1>
         </div>
-        <div class="col-12 col-md-auto row q-gutter-sm items-center">
-          <q-input v-model="plate" dense outlined placeholder="Buscar historial por placa" input-class="text-uppercase" style="width: 240px" @keyup.enter="searchHistory">
-            <template #append><q-btn flat round dense icon="manage_search" @click="searchHistory" /></template>
+        <div class="dash-actions">
+          <q-input
+            v-model="plate"
+            dense
+            outlined
+            bg-color="white"
+            placeholder="Historial por placa"
+            input-class="text-uppercase"
+            class="dash-search"
+            @keyup.enter="searchHistory"
+          >
+            <template #prepend><q-icon name="search" size="20px" /></template>
+            <template #append><q-btn flat round dense icon="arrow_forward" :disable="!plate.trim()" @click="searchHistory" /></template>
           </q-input>
           <q-btn color="accent" unelevated icon="add" label="Nueva orden" :to="{ name: 'orders', query: { nueva: 1 } }" />
-          <q-btn flat round icon="refresh" :loading="refreshing" @click="refresh"><q-tooltip>Actualizar</q-tooltip></q-btn>
+          <q-btn flat round dense icon="refresh" :loading="refreshing" @click="refresh"><q-tooltip>Actualizar</q-tooltip></q-btn>
         </div>
-      </div>
+      </header>
 
       <!-- Indicadores -->
-      <div class="row q-col-gutter-md q-mb-lg">
+      <section class="row q-col-gutter-md q-mb-lg">
         <div v-for="k in kpis" :key="k.label" class="col-6 col-md-3">
-          <q-card flat bordered class="kpi-card cursor-pointer" :style="{ borderLeftColor: `var(--q-${k.color})` }" @click="router.push(k.to)">
-            <q-card-section class="row items-center no-wrap">
+          <q-card flat bordered class="kpi-card cursor-pointer" @click="router.push(k.to)">
+            <q-card-section class="row items-center no-wrap q-gutter-x-md">
+              <div class="kpi-icon" :style="{ background: `color-mix(in srgb, var(--q-${k.color}) 12%, transparent)`, color: `var(--q-${k.color})` }">
+                <q-icon :name="k.icon" size="24px" />
+              </div>
               <div class="col">
-                <div class="text-caption text-grey-7">{{ k.label }}</div>
+                <div class="kpi-label">{{ k.label }}</div>
                 <div class="kpi-value">{{ k.value }}</div>
               </div>
-              <q-icon :name="k.icon" size="36px" :color="k.color" />
             </q-card-section>
           </q-card>
         </div>
-      </div>
+      </section>
 
-      <div class="row q-col-gutter-md">
+      <div class="column q-gutter-y-lg">
         <!-- Tablero -->
-        <div class="col-12 col-lg-9">
-          <div class="row items-center q-mb-sm">
-            <div class="text-h6">Tablero de órdenes activas</div>
+        <section class="col-12">
+          <div class="row items-baseline q-mb-md">
+            <h2 class="section-title q-ma-none">Órdenes activas</h2>
             <q-space />
-            <div class="text-caption text-grey-7">En proceso: <b>{{ formatMoney(pendingValue) }}</b></div>
+            <div class="text-caption text-grey-7">
+              En proceso <span class="text-weight-bold tabular" style="color: var(--tm-text)">{{ formatMoney(pendingValue) }}</span>
+            </div>
           </div>
-          <div class="row q-col-gutter-sm">
-            <div v-for="col in board" :key="col.value" class="col-12 col-sm-6 col-md">
-              <q-card flat bordered class="full-height">
-                <q-card-section class="q-py-sm row items-center no-wrap" :class="`bg-${col.color} text-white`">
-                  <q-icon :name="col.icon" class="q-mr-xs" />
-                  <div class="text-caption text-weight-bold ellipsis">{{ col.label }}</div>
-                  <q-space />
-                  <q-badge color="white" text-color="dark" :label="col.orders.length" />
-                </q-card-section>
-                <q-list separator dense>
-                  <q-item
-                    v-for="o in col.orders"
-                    :key="o._id"
-                    clickable
-                    :to="{ name: 'order-detail', params: { id: o._id } }"
-                    class="q-py-sm"
-                  >
-                    <q-item-section>
-                      <div><PlateTag :plate="o.vehicle?.plate" /></div>
-                      <q-item-label class="q-mt-xs">{{ o.vehicle?.brand }} {{ o.vehicle?.model }}</q-item-label>
-                      <q-item-label caption lines="1">{{ o.mechanic?.fullName }}</q-item-label>
-                      <q-item-label caption><q-icon name="schedule" /> {{ daysIn(o.entryDate) }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item v-if="!col.orders.length">
-                    <q-item-section class="text-caption text-grey-6 text-center">Sin órdenes</q-item-section>
-                  </q-item>
-                </q-list>
+
+          <div class="board">
+            <div v-for="col in board" :key="col.value" class="board__col">
+              <div class="board__head">
+                <span class="board__dot" :class="`bg-${col.color}`"></span>
+                <span class="board__label ellipsis">{{ col.label }}</span>
+                <q-space />
+                <span class="board__count">{{ col.orders.length }}</span>
+              </div>
+
+              <div class="board__body">
+                <router-link
+                  v-for="o in col.orders"
+                  :key="o._id"
+                  :to="{ name: 'order-detail', params: { id: o._id } }"
+                  class="order-card"
+                >
+                  <PlateTag :plate="o.vehicle?.plate" />
+                  <div class="order-card__vehicle">{{ o.vehicle?.brand }} {{ o.vehicle?.model }}</div>
+                  <div class="order-card__meta ellipsis"><q-icon name="engineering" size="14px" /> {{ o.mechanic?.fullName || 'Sin asignar' }}</div>
+                  <div class="order-card__meta"><q-icon name="schedule" size="14px" /> {{ daysIn(o.entryDate) }}</div>
+                </router-link>
+                <div v-if="!col.orders.length" class="empty-state">Sin órdenes</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Stock bajo -->
+        <section class="col-12">
+          <div class="row items-baseline q-mb-md">
+            <h2 class="section-title q-ma-none">Stock bajo</h2>
+            <q-space />
+            <span class="text-caption text-grey-7">≤ {{ appStore.lowStockThreshold }} uds.</span>
+          </div>
+          <div v-if="partStore.lowStockParts.length" class="row q-col-gutter-sm">
+            <div v-for="p in partStore.lowStockParts" :key="p._id" class="col-12 col-sm-6 col-md-4 col-lg-3">
+              <q-card flat bordered>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label class="text-weight-medium">{{ p.name }}</q-item-label>
+                    <q-item-label caption>{{ p.brand || 'Sin marca' }}</q-item-label>
+                  </q-item-section>
+                  <q-item-section side>
+                    <q-badge rounded :color="p.stock === 0 ? 'negative' : 'warning'" :text-color="p.stock === 0 ? 'white' : 'dark'" :label="p.stock === 0 ? 'Agotado' : `${p.stock} uds.`" />
+                  </q-item-section>
+                </q-item>
               </q-card>
             </div>
           </div>
-        </div>
-
-        <!-- Stock bajo -->
-        <div class="col-12 col-lg-3">
-          <div class="text-h6 q-mb-sm">Stock bajo (≤ {{ appStore.lowStockThreshold }})</div>
-          <q-card flat bordered>
-            <q-list separator>
-              <q-item v-for="p in partStore.lowStockParts" :key="p._id">
-                <q-item-section>
-                  <q-item-label>{{ p.name }}</q-item-label>
-                  <q-item-label caption>{{ p.brand || 'Sin marca' }}</q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-badge :color="p.stock === 0 ? 'negative' : 'warning'" :text-color="p.stock === 0 ? 'white' : 'dark'" :label="p.stock" />
-                </q-item-section>
-              </q-item>
-              <q-item v-if="!partStore.lowStockParts.length">
-                <q-item-section class="text-grey-7 text-center">
-                  <q-icon name="check_circle" color="positive" size="28px" class="q-mx-auto" />
-                  Inventario en buen nivel
-                </q-item-section>
-              </q-item>
-            </q-list>
-            <q-card-actions>
-              <q-btn flat color="primary" label="Ir a repuestos" icon-right="arrow_forward" to="/repuestos" />
-            </q-card-actions>
+          <q-card v-else flat bordered>
+            <div class="empty-state">
+              <q-icon name="check_circle" color="positive" size="28px" class="q-mb-xs" /><br />
+              Inventario en buen nivel
+            </div>
           </q-card>
-        </div>
+          <div class="q-mt-sm">
+            <q-btn flat no-caps dense color="primary" label="Ir a repuestos" icon-right="arrow_forward" to="/repuestos" />
+          </div>
+        </section>
       </div>
     </div>
   </q-page>
 </template>
+
+<style scoped>
+.dash-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 20px;
+  margin-bottom: 22px;
+}
+.dash-title {
+  margin: 2px 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+.text-eyebrow::first-letter { text-transform: uppercase; }
+.dash-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.dash-search { width: 220px; }
+.body--dark .dash-search :deep(.q-field__control) { background: var(--tm-surface); }
+
+/* Tablero: columnas con scroll horizontal en pantallas estrechas */
+.board {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(200px, 1fr);
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x proximity;
+}
+.board__col {
+  scroll-snap-align: start;
+  background: color-mix(in srgb, var(--tm-border) 40%, transparent);
+  border-radius: var(--tm-radius);
+  padding: 10px;
+  min-height: 140px;
+}
+.board__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.board__dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.board__count {
+  min-width: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--tm-surface);
+  color: var(--tm-text-muted);
+  border: 1px solid var(--tm-border);
+}
+.board__body { display: flex; flex-direction: column; gap: 8px; }
+.order-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: inherit;
+  background: var(--tm-surface);
+  border: 1px solid var(--tm-border);
+  border-radius: 10px;
+  box-shadow: var(--tm-shadow);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.order-card:hover { box-shadow: var(--tm-shadow-hover); transform: translateY(-1px); }
+.order-card__vehicle { margin-top: 4px; font-size: 0.9rem; font-weight: 600; }
+.order-card__meta {
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--tm-text-muted);
+}
+@media (max-width: 599px) {
+  .dash-title { font-size: 1.25rem; }
+  .dash-actions { width: 100%; }
+  .dash-search { flex: 1 1 100%; width: auto; }
+  .board { grid-auto-columns: 78%; }
+}
+</style>

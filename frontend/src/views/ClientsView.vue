@@ -3,6 +3,8 @@ import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useClientStore } from '../stores/clients.js'
 import PageHeader from '../components/PageHeader.vue'
+import RowActions from '../components/RowActions.vue'
+import SearchInput from '../components/SearchInput.vue'
 import PlateTag from '../components/PlateTag.vue'
 import { notifySuccess, notifyError } from '../utils/notify.js'
 import { required, minLength, phone, email } from '../utils/rules.js'
@@ -122,32 +124,22 @@ onMounted(() => onSearch(search.value))
         bordered
       >
         <template #top>
-          <q-input
+          <SearchInput
             v-model="search"
-            dense
-            outlined
-            debounce="400"
-            clearable
+            :debounce="400"
+            max-width="420px"
             placeholder="Buscar por nombre, documento, correo o teléfono"
-            class="full-width"
-            style="max-width: 420px"
             @update:model-value="onSearch"
-          >
-            <template #prepend><q-icon name="search" /></template>
-          </q-input>
+          />
         </template>
 
         <template #body-cell-actions="props">
-          <q-td :props="props" class="q-gutter-xs">
-            <q-btn flat round dense color="primary" icon="directions_car" @click="openVehicles(props.row)">
-              <q-tooltip>Ver vehículos</q-tooltip>
-            </q-btn>
-            <q-btn flat round dense color="secondary" icon="edit" @click="openEdit(props.row)">
-              <q-tooltip>Editar</q-tooltip>
-            </q-btn>
-            <q-btn flat round dense color="negative" icon="delete" @click="confirmDelete(props.row)">
-              <q-tooltip>Eliminar</q-tooltip>
-            </q-btn>
+          <q-td :props="props">
+            <RowActions @edit="openEdit(props.row)" @delete="confirmDelete(props.row)">
+              <q-btn flat round dense color="primary" icon="directions_car" @click="openVehicles(props.row)">
+                <q-tooltip>Ver vehículos</q-tooltip>
+              </q-btn>
+            </RowActions>
           </q-td>
         </template>
       </q-table>

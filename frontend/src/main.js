@@ -4,7 +4,8 @@ import { createApp } from 'vue'
 import { Quasar, Notify, Dialog, Loading, LoadingBar } from 'quasar'
 import quasarLang from 'quasar/lang/es'
 import '@quasar/extras/material-icons/material-icons.css'
-import '@quasar/extras/roboto-font/roboto-font.css'
+import '@fontsource-variable/inter'
+import '@fontsource-variable/jetbrains-mono'
 import 'quasar/src/css/index.sass'
 
 // ---------- Pinia + persistencia ----------

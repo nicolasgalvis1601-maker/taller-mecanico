@@ -4,6 +4,8 @@ import { useQuasar } from 'quasar'
 import { usePartStore } from '../stores/parts.js'
 import { useAppStore } from '../stores/app.js'
 import PageHeader from '../components/PageHeader.vue'
+import RowActions from '../components/RowActions.vue'
+import SearchInput from '../components/SearchInput.vue'
 import { notifySuccess, notifyError } from '../utils/notify.js'
 import { required, nonNegative, integer } from '../utils/rules.js'
 import { formatMoney } from '../utils/format.js'
@@ -148,9 +150,7 @@ onMounted(load)
         <template #top>
           <div class="row items-center q-col-gutter-md full-width">
             <div class="col-12 col-md">
-              <q-input v-model="filter" dense outlined clearable placeholder="Filtrar repuestos…" style="max-width: 320px">
-                <template #prepend><q-icon name="search" /></template>
-              </q-input>
+              <SearchInput v-model="filter" placeholder="Filtrar repuestos…" max-width="320px" />
             </div>
             <div class="col-auto">
               <q-toggle v-model="onlyLowStock" color="warning" label="Solo stock bajo" @update:model-value="load" />
@@ -179,10 +179,10 @@ onMounted(load)
         </template>
 
         <template #body-cell-actions="props">
-          <q-td :props="props" class="q-gutter-xs">
-            <q-btn flat round dense color="primary" icon="swap_vert" @click="openStock(props.row)"><q-tooltip>Ajustar stock</q-tooltip></q-btn>
-            <q-btn flat round dense color="secondary" icon="edit" @click="openEdit(props.row)"><q-tooltip>Editar</q-tooltip></q-btn>
-            <q-btn flat round dense color="negative" icon="delete" @click="confirmDelete(props.row)"><q-tooltip>Eliminar</q-tooltip></q-btn>
+          <q-td :props="props">
+            <RowActions @edit="openEdit(props.row)" @delete="confirmDelete(props.row)">
+              <q-btn flat round dense color="primary" icon="swap_vert" @click="openStock(props.row)"><q-tooltip>Ajustar stock</q-tooltip></q-btn>
+            </RowActions>
           </q-td>
         </template>
       </q-table>

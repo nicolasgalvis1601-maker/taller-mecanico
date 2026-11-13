@@ -3,6 +3,8 @@ import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useServiceStore } from '../stores/services.js'
 import PageHeader from '../components/PageHeader.vue'
+import RowActions from '../components/RowActions.vue'
+import SearchInput from '../components/SearchInput.vue'
 import { notifySuccess, notifyError } from '../utils/notify.js'
 import { required, nonNegative } from '../utils/rules.js'
 import { formatMoney } from '../utils/format.js'
@@ -96,17 +98,14 @@ onMounted(() => serviceStore.fetchServices().catch(notifyError))
         bordered
       >
         <template #top>
-          <q-input v-model="filter" dense outlined clearable placeholder="Filtrar servicios…" style="width: 320px; max-width: 100%">
-            <template #prepend><q-icon name="search" /></template>
-          </q-input>
+          <SearchInput v-model="filter" placeholder="Filtrar servicios…" max-width="320px" />
         </template>
         <template #body-cell-price="props">
           <q-td :props="props" class="text-weight-bold">{{ props.value }}</q-td>
         </template>
         <template #body-cell-actions="props">
-          <q-td :props="props" class="q-gutter-xs">
-            <q-btn flat round dense color="secondary" icon="edit" @click="openEdit(props.row)"><q-tooltip>Editar</q-tooltip></q-btn>
-            <q-btn flat round dense color="negative" icon="delete" @click="confirmDelete(props.row)"><q-tooltip>Eliminar</q-tooltip></q-btn>
+          <q-td :props="props">
+            <RowActions @edit="openEdit(props.row)" @delete="confirmDelete(props.row)" />
           </q-td>
         </template>
       </q-table>

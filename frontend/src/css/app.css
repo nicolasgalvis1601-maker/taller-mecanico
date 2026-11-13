@@ -1,49 +1,211 @@
-/* Estilos globales complementarios a Quasar */
-body {
-  font-family: 'Roboto', -apple-system, 'Segoe UI', sans-serif;
+/* ============================================================
+   Estilos globales — Taller Mecánico Pro
+   ============================================================ */
+
+:root {
+  --tm-font: 'Inter Variable', 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --tm-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+
+  --tm-bg: #f4f6f9;
+  --tm-surface: #ffffff;
+  --tm-border: #e3e8ef;
+  --tm-text: #1b2430;
+  --tm-text-muted: #64748b;
+  --tm-radius: 12px;
+  --tm-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.06);
+  --tm-shadow-hover: 0 4px 12px rgba(16, 24, 40, 0.1);
+}
+.body--dark {
+  --tm-bg: #11151b;
+  --tm-surface: #1b222c;
+  --tm-border: rgba(255, 255, 255, 0.09);
+  --tm-text: #e8edf3;
+  --tm-text-muted: #98a4b5;
+  --tm-shadow: none;
+  --tm-shadow-hover: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
+/* ---------- Base y tipografía ---------- */
+body {
+  font-family: var(--tm-font);
+  font-feature-settings: 'cv11', 'ss01'; /* a/1 más legibles en Inter */
+  -webkit-font-smoothing: antialiased;
+  background: var(--tm-bg);
+  color: var(--tm-text);
+}
+.q-page {
+  background: var(--tm-bg);
+}
+.text-grey-7,
+.text-grey-6 {
+  color: var(--tm-text-muted) !important;
+}
+.text-mono,
+.plate {
+  font-family: var(--tm-mono);
+  font-variant-numeric: tabular-nums;
+}
+.text-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tm-text-muted);
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Contenedor de página ---------- */
 .page-container {
   max-width: 1280px;
   margin: 0 auto;
+  padding: 4px 0 24px;
+}
+@media (max-width: 599px) {
+  .q-page.q-pa-md,
+  .q-page[class*='q-pa'] {
+    padding: 12px;
+  }
 }
 
+/* ---------- Tarjetas ---------- */
+.q-card {
+  border-radius: var(--tm-radius);
+}
+.q-card--bordered {
+  border: 1px solid var(--tm-border);
+}
+.q-card:not(.q-dialog-plugin):not(.no-shadow) {
+  box-shadow: var(--tm-shadow);
+}
+.q-card.q-card--flat {
+  box-shadow: var(--tm-shadow);
+}
+.q-dialog .q-card {
+  box-shadow: 0 16px 40px rgba(16, 24, 40, 0.22);
+}
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+}
+
+/* ---------- Indicadores (KPI) ---------- */
 .kpi-card {
-  border-left: 4px solid var(--q-primary);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  height: 100%;
+}
+.kpi-card:hover {
+  box-shadow: var(--tm-shadow-hover);
+  transform: translateY(-1px);
+}
+.kpi-card .kpi-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--tm-text-muted);
 }
 .kpi-card .kpi-value {
   font-size: 2rem;
   font-weight: 700;
   line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex: none;
 }
 
+/* ---------- Placa ---------- */
 .plate {
   display: inline-block;
-  font-family: 'Roboto Mono', ui-monospace, monospace;
   font-weight: 700;
   letter-spacing: 0.08em;
-  padding: 2px 8px;
-  border: 2px solid #222;
-  border-radius: 4px;
+  padding: 1px 8px;
+  border: 1.5px solid #2b2b2b;
+  border-radius: 5px;
   background: #ffd54f;
-  color: #222;
-  font-size: 0.85rem;
+  color: #1f1f1f;
+  font-size: 0.8rem;
+  line-height: 1.5;
 }
 
+/* ---------- Tablas ---------- */
+.q-table__card {
+  border-radius: var(--tm-radius);
+  background: var(--tm-surface);
+}
+.q-table thead tr th {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--tm-text-muted);
+  background: color-mix(in srgb, var(--tm-border) 35%, transparent);
+}
+.q-table tbody td {
+  font-size: 0.875rem;
+}
+.q-table--bordered,
+.q-table--bordered th,
+.q-table--bordered td {
+  border-color: var(--tm-border);
+}
+.q-table__top {
+  padding: 14px 16px;
+}
+.q-table__bottom {
+  color: var(--tm-text-muted);
+  border-top: 1px solid var(--tm-border);
+}
 .table-clickable tbody tr {
   cursor: pointer;
+  transition: background 0.12s ease;
+}
+.table-clickable tbody tr:hover {
+  background: color-mix(in srgb, var(--q-primary) 6%, transparent);
 }
 
-.text-mono {
-  font-family: 'Roboto Mono', ui-monospace, monospace;
+/* ---------- Formularios y botones ---------- */
+.q-field--outlined .q-field__control {
+  border-radius: 10px;
 }
-
-/* Los campos de placa se escriben en mayúsculas, pero el placeholder no */
+.q-field__label {
+  font-weight: 500;
+}
+.q-btn {
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.q-btn--rectangle {
+  padding-inline: 16px;
+}
+.q-chip {
+  font-weight: 500;
+}
+.q-dialog__title,
+.q-card__section .text-h6 {
+  letter-spacing: -0.01em;
+}
 input.text-uppercase::placeholder {
   text-transform: none;
 }
 
-/* Modo oscuro: el azul de marca es muy oscuro para texto, se aclara */
+/* ---------- Estado vacío ---------- */
+.empty-state {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--tm-text-muted);
+  font-size: 0.85rem;
+}
+
+/* ---------- Modo oscuro: ajustes de contraste ---------- */
 .body--dark .text-primary {
   color: #8fb3e3 !important;
 }
@@ -51,4 +213,7 @@ input.text-uppercase::placeholder {
 .body--dark .q-chip.bg-primary,
 .body--dark .q-badge.bg-primary {
   background: #2f5a8c !important;
+}
+.body--dark .q-table thead tr th {
+  background: rgba(255, 255, 255, 0.03);
 }

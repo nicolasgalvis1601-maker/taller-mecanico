@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useMechanicStore } from '../stores/mechanics.js'
 import PageHeader from '../components/PageHeader.vue'
+import RowActions from '../components/RowActions.vue'
 import StatusChip from '../components/StatusChip.vue'
 import PlateTag from '../components/PlateTag.vue'
 import { notifySuccess, notifyError } from '../utils/notify.js'
@@ -126,10 +127,7 @@ onMounted(() => mechanicStore.fetchMechanics().catch(notifyError))
             <q-separator />
             <q-card-actions align="between">
               <q-btn flat color="primary" icon="assignment" label="Órdenes activas" @click="openOrders(m)" />
-              <div>
-                <q-btn flat round dense color="secondary" icon="edit" @click="openEdit(m)"><q-tooltip>Editar</q-tooltip></q-btn>
-                <q-btn flat round dense color="negative" icon="delete" @click="confirmDelete(m)"><q-tooltip>Eliminar</q-tooltip></q-btn>
-              </div>
+              <RowActions @edit="openEdit(m)" @delete="confirmDelete(m)" />
             </q-card-actions>
           </q-card>
         </div>
